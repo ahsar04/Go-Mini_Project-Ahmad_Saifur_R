@@ -31,6 +31,12 @@ func New() *echo.Echo{
 	eJWT.POST("exams", controllers.CreateExamController)
 	eJWT.DELETE("exams/:id", controllers.DeleteExamController)
 	eJWT.PUT("exams/:id", controllers.UpdateExamController)
+	// participans
+	e.GET("/participants", controllers.GetParticipantsController)
+	e.GET("/participants/:id", controllers.GetParticipantController)
+	e.POST("/participants", controllers.CreateParticipantController)
+	e.DELETE("/participants/:id", controllers.DeleteParticipantController)
+	e.PUT("/participants/:id", controllers.UpdateParticipantController)
 
 
 	return e
