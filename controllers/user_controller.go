@@ -18,11 +18,11 @@ func GetUsersController(c echo.Context) error {
 	if err := config.DB.Find(&users).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	// userResponse := models.UserResponse{int(users.ID), users.Name, users.Email, users.Phone}
+	userResponse := models.UserResponse{int(users.ID),users.Name,users.Email,users.Phone}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"status": http.StatusOK,
 		"message": "success get all users",
-		"users":   users,
+		"users":   userResponse,
 	})
 }
 // get user by id
@@ -33,11 +33,11 @@ func GetUserController(c echo.Context) error {
 	if err := config.DB.First(&user, userID).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-
+	userResponse := models.UserResponse{int(user.ID),user.Name,user.Email,user.Phone}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"status": http.StatusOK,
 		"message": "success get user by id",
-		"user":    user,
+		"user":    userResponse,
 	})
 }
 // create new user
