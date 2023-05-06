@@ -13,7 +13,7 @@ func GetParticipantsController(c echo.Context) error {
 	var participants []models.Participant
 
 
-	if err := config.DB.Preload("User").Find(&participants).Error; err != nil {
+	if err := config.DB.Find(&participants).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -27,7 +27,7 @@ func GetParticipantController(c echo.Context) error {
 	participant := models.Participant{}
 	participantID := c.Param("id")
 
-	if err := config.DB.Preload("User").First(&participant, participantID).Error; err != nil {
+	if err := config.DB.First(&participant, participantID).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -43,7 +43,7 @@ func CreateParticipantController(c echo.Context) error {
 	c.Bind(&participant)
 
 
-	if err := config.DB.Preload("User").Save(&participant).Error; err != nil {
+	if err := config.DB.Save(&participant).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -57,7 +57,7 @@ func DeleteParticipantController(c echo.Context) error {
 	participant := models.Participant{}
 	participantID := c.Param("id")
 
-	if err := config.DB.Preload("User").First(&participant, participantID).Error; err != nil {
+	if err := config.DB.First(&participant, participantID).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 

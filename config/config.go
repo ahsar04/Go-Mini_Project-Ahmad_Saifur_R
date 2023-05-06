@@ -60,4 +60,5 @@ func InitialMigration() {
   	DB.AutoMigrate(&models.User{})
   	DB.AutoMigrate(&models.Exam{})
   	DB.AutoMigrate(&models.Participant{})
+  	DB.AutoMigrate(&models.Registration{})
 }

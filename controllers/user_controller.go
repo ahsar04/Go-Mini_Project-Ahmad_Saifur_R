@@ -11,12 +11,14 @@ import (
 
 // get all users
 func GetUsersController(c echo.Context) error {
-	var users []models.User
+	users:= models.User{}
+	c.Bind(&users)
 
 
 	if err := config.DB.Find(&users).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	// userResponse := models.UserResponse{int(users.ID), users.Name, users.Email, users.Phone}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"status": http.StatusOK,
 		"message": "success get all users",
@@ -98,6 +100,7 @@ func LoginUserController(c echo.Context) error {
 	user := models.User{}
 	c.Bind(&user)
 
+
 	err := config.DB.Where("email = ? AND password = ?",user.Email, user.Password).First(&user).Error
 	if  err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -106,14 +109,14 @@ func LoginUserController(c echo.Context) error {
 		})
 	}
 
-	token, err := middlewares.CreateToken(user.ID, user.Name)
+	token, err := middlewares.CreateToken(int(user.ID), user.Name)
 	if err!=nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message" : "fail login",
 			"error" : err.Error(),
 		})
 	}
-	userResponse := models.UserResponse{user.ID, user.Name, user.Email, user.Phone, token}
+	userResponse := models.UserLoginResponse{int(user.ID), user.Name, user.Email, user.Phone, token}
     return c.JSON(http.StatusOK, map[string]interface{}{
         "status":  http.StatusOK,
         "message": "success login",

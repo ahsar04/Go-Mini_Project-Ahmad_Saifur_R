@@ -32,11 +32,17 @@ func New() *echo.Echo{
 	eJWT.DELETE("exams/:id", controllers.DeleteExamController)
 	eJWT.PUT("exams/:id", controllers.UpdateExamController)
 	// participans
-	e.GET("/participants", controllers.GetParticipantsController)
-	e.GET("/participants/:id", controllers.GetParticipantController)
-	e.POST("/participants", controllers.CreateParticipantController)
-	e.DELETE("/participants/:id", controllers.DeleteParticipantController)
-	e.PUT("/participants/:id", controllers.UpdateParticipantController)
+	eJWT.GET("participants", controllers.GetParticipantsController)
+	eJWT.GET("participants/:id", controllers.GetParticipantController)
+	eJWT.POST("participants", controllers.CreateParticipantController)
+	eJWT.DELETE("participants/:id", controllers.DeleteParticipantController)
+	eJWT.PUT("participants/:id", controllers.UpdateParticipantController)
+	// Registrations
+	e.GET("registrations", controllers.GetRegistrationsController)
+	e.GET("registrations/:id", controllers.GetRegistrationController)
+	e.POST("registrations", controllers.CreateRegistrationController)
+	e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
+	e.PUT("registrations/:id", controllers.UpdateRegistrationController)
 
 
 	return e
