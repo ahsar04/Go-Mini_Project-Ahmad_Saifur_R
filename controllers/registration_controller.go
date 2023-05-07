@@ -106,7 +106,7 @@ func LoginClientController(c echo.Context) error {
     }
     registration := models.Registration{}
     // Get user from database by email
-    if err := config.DB.Preload("Exam").Preload("Participant").First(&registration, "exam_id = ? AND participant_id = ?",req.Exam_code,req.Email).Error; err != nil {
+    if err := config.DB.Preload("Exam", "exam_code = ?",req.Exam_code).Preload("Participant", "email = ?",req.Email).First(&registration).Error; err != nil {
         return c.JSON(http.StatusInternalServerError, map[string]interface{}{
             "message": "exam not found",
             "error":   err.Error(),
@@ -122,11 +122,11 @@ func LoginClientController(c echo.Context) error {
     }
 
     // Return user data and JWT token
-    userResponse := models.ClienLoginResponse{registration.ID,registration.Exam_id,registration.Participant_id,token,registration.Exam.Exam_name,registration.Participant.Name}
+    dataResponse := models.ClienLoginResponse{registration.ID,registration.Exam_id,registration.Participant_id,token,registration.Exam.Exam_name,registration.Participant.Name}
     return c.JSON(http.StatusOK, map[string]interface{}{
         "status":  http.StatusOK,
         "message": "success login",
-        "user":    userResponse,
+        "data":    dataResponse,
     })
 }
 
