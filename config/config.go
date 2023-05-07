@@ -1,8 +1,9 @@
 package config
 
 import (
-	"code_structure/models"
 	"fmt"
+
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -60,4 +61,6 @@ func InitialMigration() {
   	DB.AutoMigrate(&models.User{})
   	DB.AutoMigrate(&models.Exam{})
   	DB.AutoMigrate(&models.Participant{})
+  	DB.AutoMigrate(&models.Registration{})
+  	DB.AutoMigrate(&models.Monitoring{})
 }
