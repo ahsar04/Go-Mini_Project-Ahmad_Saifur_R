@@ -43,6 +43,12 @@ func New() *echo.Echo{
 	e.POST("registrations", controllers.CreateRegistrationController)
 	e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
 	e.PUT("registrations/:id", controllers.UpdateRegistrationController)
+	// Monitorings
+	e.GET("monitorings", controllers.GetMonitoringsController)
+	e.GET("monitorings/:exam_reg", controllers.GetMonitoringController)
+	e.POST("monitorings", controllers.CreateMonitoringController)
+	// e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
+	// e.PUT("registrations/:id", controllers.UpdateRegistrationController)
 
 
 	return e
