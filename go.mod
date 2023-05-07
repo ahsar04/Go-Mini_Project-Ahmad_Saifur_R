@@ -1,4 +1,4 @@
-module code_structure
+module github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R
 
 go 1.19
 

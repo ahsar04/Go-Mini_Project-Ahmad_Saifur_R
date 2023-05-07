@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"code_structure/config"
-	"code_structure/models"
 	"net/http"
+
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/config"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
 
 	"github.com/labstack/echo"
 )

@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"code_structure/constants"
-	"code_structure/controllers"
-	m "code_structure/middlewares"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/constants"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/controllers"
+	m "github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/middlewares"
 
 	"github.com/labstack/echo"
 	mid "github.com/labstack/echo/middleware"
@@ -18,6 +18,9 @@ func New() *echo.Echo{
 	
 	eJWT := e.Group("/")
 	eJWT.Use(mid.JWT([]byte(constants.SECRET_JWT)))
+	
+	ClientJWT := e.Group("/")
+	ClientJWT.Use(mid.JWT([]byte(constants.CLIEN_SECRET_JWT)))
 	// e.GET("/users", controllers.GetUsersController)
 	eJWT.GET("users", controllers.GetUsersController)
 	eJWT.GET("users/:id", controllers.GetUserController)
@@ -37,18 +40,20 @@ func New() *echo.Echo{
 	eJWT.POST("participants", controllers.CreateParticipantController)
 	eJWT.DELETE("participants/:id", controllers.DeleteParticipantController)
 	eJWT.PUT("participants/:id", controllers.UpdateParticipantController)
+	e.POST("participant/login", controllers.LoginClientController)
 	// Registrations
-	e.GET("registrations", controllers.GetRegistrationsController)
-	e.GET("registrations/:id", controllers.GetRegistrationController)
-	e.POST("registrations", controllers.CreateRegistrationController)
-	e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
-	e.PUT("registrations/:id", controllers.UpdateRegistrationController)
+	eJWT.GET("registrations", controllers.GetRegistrationsController)
+	eJWT.GET("registrations/:id", controllers.GetRegistrationController)
+	eJWT.POST("registrations", controllers.CreateRegistrationController)
+	eJWT.DELETE("registrations/:id", controllers.DeleteRegistrationController)
+	eJWT.PUT("registrations/:id", controllers.UpdateRegistrationController)
 	// Monitorings
-	e.GET("monitorings", controllers.GetMonitoringsController)
-	e.GET("monitorings/:exam_reg", controllers.GetMonitoringController)
-	e.POST("monitorings", controllers.CreateMonitoringController)
+	eJWT.GET("monitorings", controllers.GetMonitoringsController)
+	eJWT.GET("monitorings/:exam_reg", controllers.GetMonitoringController)
+	ClientJWT.POST("monitorings", controllers.CreateMonitoringController)
 	// e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
 	// e.PUT("registrations/:id", controllers.UpdateRegistrationController)
+
 
 
 	return e

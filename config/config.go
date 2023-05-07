@@ -1,8 +1,9 @@
 package config
 
 import (
-	"code_structure/models"
 	"fmt"
+
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"

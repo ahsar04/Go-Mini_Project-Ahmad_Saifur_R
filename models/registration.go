@@ -14,3 +14,12 @@ type RegistrationResponse struct {
 	Exam_id   		int    `json:"exam_id" from:"exam_id"`
 	Participant_id  int    `json:"participant_id" from:"participant_id"`
 }
+type ClienLoginResponse struct {
+	ID              uint    `json:"id" form:"id"`
+    Exam_id         uint    `json:"exam_id" from:"exam_id"`
+    Participant_id  uint    `json:"participant_id" from:"participant_id"`
+	Token           string  `json:"token" form:"token"`
+	Ujian           string  `json:"ujian" form:"ujian"`
+	Participant           string  `json:"participant" form:"participant"`
+
+}

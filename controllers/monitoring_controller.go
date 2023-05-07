@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"code_structure/config"
-	"code_structure/models"
 	"net/http"
+
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/config"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
 
 	"github.com/labstack/echo"
 )
@@ -46,11 +47,11 @@ func CreateMonitoringController(c echo.Context) error {
 	if err := config.DB.Preload("Registration").Save(&monitoring).Error; err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	// MonitoringResponse:=models.MonitoringResponse{int(monitoring.ID),int(monitoring.Exam_id),int(monitoring.Participant_id)}
+	MonitoringResponse:=models.MonitoringResponse{int(monitoring.ID),monitoring.Exam_reg,monitoring.Screenshot,monitoring.Look_at,monitoring.Time}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"status": http.StatusOK,
 		"message": "success create new Monitoring",
-		"data":    monitoring,
+		"data":    MonitoringResponse,
 	})
 }
 // // delete Monitoring by id

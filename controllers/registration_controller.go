@@ -1,9 +1,11 @@
 package controllers
 
 import (
-	"code_structure/config"
-	"code_structure/models"
 	"net/http"
+
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/config"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/middlewares"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
 
 	"github.com/labstack/echo"
 )
@@ -93,3 +95,38 @@ func UpdateRegistrationController(c echo.Context) error {
 		"data":    RegistrationResponse,
 	})
 }
+
+func LoginClientController(c echo.Context) error {
+	req := struct {
+        Exam_code    string `json:"exam_code"`
+        Email string `json:"email"`
+    }{}
+    if err := c.Bind(&req); err != nil {
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+    }
+    registration := models.Registration{}
+    // Get user from database by email
+    if err := config.DB.Preload("Exam").Preload("Participant").First(&registration, "exam_id = ? AND participant_id = ?",req.Exam_code,req.Email).Error; err != nil {
+        return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+            "message": "exam not found",
+            "error":   err.Error(),
+        })
+    }
+    // Generate JWT token
+    token, err := middlewares.CreateClientToken(int(registration.ID), registration.Participant.Name)
+    if err != nil {
+        return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+            "message": "fail login",
+            "error":   err.Error(),
+        })
+    }
+
+    // Return user data and JWT token
+    userResponse := models.ClienLoginResponse{registration.ID,registration.Exam_id,registration.Participant_id,token,registration.Exam.Exam_name,registration.Participant.Name}
+    return c.JSON(http.StatusOK, map[string]interface{}{
+        "status":  http.StatusOK,
+        "message": "success login",
+        "user":    userResponse,
+    })
+}
+
