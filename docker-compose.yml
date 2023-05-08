@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:latest
+    container_name: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_ROOT_PASSWORD:
+    volumes:
+      - database_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 10
+  app-go:
+    container_name: app-go
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - DB_DB=mini_project
+      - DB_HOST=db
+      - DB_PORT=3306
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  database_mysql:

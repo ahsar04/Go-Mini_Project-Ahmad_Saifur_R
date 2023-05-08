@@ -22,7 +22,7 @@ func New() *echo.Echo{
 	ClientJWT := e.Group("/")
 	ClientJWT.Use(mid.JWT([]byte(constants.CLIEN_SECRET_JWT)))
 	// e.GET("/users", controllers.GetUsersController)
-	eJWT.GET("users", controllers.GetUsersController)
+	eJWT.GET("users", controllers.GetAllUsersController)
 	eJWT.GET("users/:id", controllers.GetUserController)
 	e.POST("users", controllers.CreateUserController)
 	e.POST("users/login", controllers.LoginUserController)
@@ -49,8 +49,9 @@ func New() *echo.Echo{
 	eJWT.PUT("registrations/:id", controllers.UpdateRegistrationController)
 	// Monitorings
 	eJWT.GET("monitorings", controllers.GetMonitoringsController)
-	eJWT.GET("monitorings/:exam_reg", controllers.GetMonitoringController)
+	// eJWT.GET("monitorings/:exam_reg", controllers.GetMonitoringController)
 	ClientJWT.POST("monitorings", controllers.CreateMonitoringController)
+	ClientJWT.POST("monitorings2", controllers.CreateMonitoringController2)
 	// e.DELETE("registrations/:id", controllers.DeleteRegistrationController)
 	// e.PUT("registrations/:id", controllers.UpdateRegistrationController)
 

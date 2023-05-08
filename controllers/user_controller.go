@@ -4,60 +4,51 @@ import (
 	"net/http"
 
 	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/config"
-	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/helpers"
-	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/middlewares"
 	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
+	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/services"
 
 	"github.com/labstack/echo"
 )
 
 // get all users
-func GetUsersController(c echo.Context) error {
-	users:= models.User{}
-	c.Bind(&users)
+// Controller untuk mendapatkan semua pengguna
+func GetAllUsersController(c echo.Context) error {
+    userResponses, err := services.GetAllUsersService()
+    if err != nil {
+        return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+    }
 
-
-	if err := config.DB.Find(&users).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	userResponse := models.UserResponse{int(users.ID),users.Name,users.Email,users.Phone}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": http.StatusOK,
-		"message": "success get all users",
-		"users":   userResponse,
-	})
+    return c.JSON(http.StatusOK, map[string]interface{}{
+        "status":  http.StatusOK,
+        "message": "success get all users",
+        "users":   userResponses,
+    })
 }
+
 // get user by id
 func GetUserController(c echo.Context) error {
-	user := models.User{}
-	userID := c.Param("id")
+    userID := c.Param("id")
 
-	if err := config.DB.First(&user, userID).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	userResponse := models.UserResponse{int(user.ID),user.Name,user.Email,user.Phone}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": http.StatusOK,
-		"message": "success get user by id",
-		"user":    userResponse,
-	})
+    userResponse, err := services.GetUserByIDService(userID)
+    if err != nil {
+        return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
+
+    return c.JSON(http.StatusOK, map[string]interface{}{
+        "status": http.StatusOK,
+        "message": "success get user by id",
+        "user": userResponse,
+    })
 }
 // create new user
 func CreateUserController(c echo.Context) error {
     user := models.User{}
     c.Bind(&user)
 
-    // Hash password before saving to database
-    hashedPassword, err := helpers.HashPassword(user.Password)
+    userResponse, err := services.CreateUserService(user)
     if err != nil {
-        return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-    }
-    user.Password = string(hashedPassword)
-
-    if err := config.DB.Save(&user).Error; err != nil {
         return echo.NewHTTPError(http.StatusBadRequest, err.Error())
     }
-	userResponse := models.UserResponse{int(user.ID),user.Name,user.Email,user.Phone}
 
     return c.JSON(http.StatusOK, map[string]interface{}{
         "status":  http.StatusOK,
@@ -65,83 +56,63 @@ func CreateUserController(c echo.Context) error {
         "user":    userResponse,
     })
 }
-
 // delete user by id
+// Delete user by ID
 func DeleteUserController(c echo.Context) error {
-	user := models.User{}
-	userID := c.Param("id")
+    userID := c.Param("id")
 
-	if err := config.DB.First(&user, userID).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+    if err := services.DeleteUserService(userID); err != nil {
+        return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 
-	if err := config.DB.Delete(&user).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": http.StatusOK,
-		"message": "success delete user by id",
-	})
+    return c.JSON(http.StatusOK, map[string]interface{}{
+        "status":  http.StatusOK,
+        "message": "success delete user by id",
+    })
 }
-// update user by id
+
+// Update user by ID
 func UpdateUserController(c echo.Context) error {
-	user := models.User{}
-	userID := c.Param("id")
+    user := models.User{}
+    userID := c.Param("id")
 
-	if err := config.DB.First(&user, userID).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+    if err := config.DB.First(&user, userID).Error; err != nil {
+        return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 
-	if err := c.Bind(&user); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+    if err := c.Bind(&user); err != nil {
+        return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 
-	if err := config.DB.Save(&user).Error; err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+    updatedUser, err := services.UpdateUserService(userID, user)
+    if err != nil {
+        return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": http.StatusOK,
-		"message": "success update user by id",
-		"user":    user,
-	})
+    return c.JSON(http.StatusOK, map[string]interface{}{
+        "status":  http.StatusOK,
+        "message": "success update user by id",
+        "user":    updatedUser,
+    })
 }
 func LoginUserController(c echo.Context) error {
     user := models.User{}
     c.Bind(&user)
-	pass := user.Password
+    email := user.Email
+    password := user.Password
 
-    // Get user from database by email
-    if err := config.DB.Where("email = ?", user.Email).First(&user).Error; err != nil {
-        return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-            "message": "fail login",
-            "error":   err.Error(),
-        })
-    }
-
-    // Verify password using bcrypt
-    if err := helpers.CheckPasswordHash(pass, user.Password); err != nil {
+    userResponse, err := services.LoginUserService(email, password)
+    if err != nil {
         return c.JSON(http.StatusUnauthorized, map[string]interface{}{
             "message": "fail login",
             "error":   "invalid email or password",
         })
     }
 
-    // Generate JWT token
-    token, err := middlewares.CreateToken(int(user.ID), user.Name)
-    if err != nil {
-        return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-            "message": "fail login",
-            "error":   err.Error(),
-        })
-    }
-
-    // Return user data and JWT token
-    userResponse := models.UserLoginResponse{int(user.ID), user.Name, user.Email, user.Phone, token}
     return c.JSON(http.StatusOK, map[string]interface{}{
         "status":  http.StatusOK,
         "message": "success login",
         "user":    userResponse,
     })
 }
+
