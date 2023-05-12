@@ -23,7 +23,7 @@ services:
       - DB_USERNAME=root
       - DB_PASSWORD=
       - DB_DB=mini_project
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_PORT=3306
     restart: on-failure
     depends_on:

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
-	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -15,13 +14,20 @@ import (
 	"github.com/labstack/echo"
 )
 
-func GetMonitorings() ([]models.Monitoring, error) {
-	monitorings := []models.Monitoring{}
+func GetMonitorings() (models.MonitoringResponse, error) {
+	monitorings := models.Monitoring{}
 	err := config.DB.Preload("Registration").Preload("Registration.Exam").Preload("Registration.Participant").Find(&monitorings).Error
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return models.MonitoringResponse{}, err
 	}
-	return monitorings, nil
+	MonitoringResponse := models.MonitoringResponse{
+		ID:         int(monitorings.ID),
+		Exam_reg:   monitorings.Exam_reg,
+		Screenshot: monitorings.Screenshot,
+		Look_at:    monitorings.Look_at,
+		Time:       monitorings.Time,
+	}
+	return MonitoringResponse, nil
 }
 func CreateMonitoringService(c echo.Context) (models.MonitoringResponse, error) {
 	monitoring := models.Monitoring{}
