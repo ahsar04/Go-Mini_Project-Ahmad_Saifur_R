@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
 
 	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/config"
 	"github.com/ahsar04/Go-Mini_Project-Ahmad_Saifur_R/models"
@@ -109,4 +112,29 @@ func UpdateExamController(c echo.Context) error {
 		"message": "success update exam by id",
 		"data":    examResponse,
 	})
+}
+func TestUpdateExamController(t *testing.T) {
+	// Initialize a new Echo instance
+	e := echo.New()
+
+	// Create a new request
+	req := httptest.NewRequest(http.MethodPut, "/exams/1", strings.NewReader(`{"exam_name":"New Exam Name","exam_code":"NE","exam_date":"2023-06-01"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Call the controller function
+	if err := UpdateExamController(c); err != nil {
+		t.Fatalf("failed to update exam: %v", err)
+	}
+
+	// Assert the response
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	expectedBody := `{"data":{"exam_code":"NE","exam_date":"2023-06-01","exam_id":1,"exam_name":"New Exam Name"},"message":"success update exam by id","status":200}`
+	if rec.Body.String() != expectedBody {
+		t.Errorf("unexpected response body:\n expected: %s\n got: %s", expectedBody, rec.Body.String())
+	}
 }
